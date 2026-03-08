@@ -1,3 +1,4 @@
+import SnowBackground from "@/components/SnowBackground";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -24,11 +25,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <body className="relative bg-black text-white overflow-x-hidden">
+
+  {/* Dark Base */}
+  <div className="fixed inset-0 -z-30 bg-black" />
+
+  {/* Ice Glow Gradient */}
+  <div className="fixed inset-0 -z-20 bg-[radial-gradient(circle_at_20%_20%,rgba(0,229,255,0.2),transparent_40%),radial-gradient(circle_at_80%_30%,rgba(59,130,246,0.2),transparent_40%),radial-gradient(circle_at_50%_80%,rgba(0,229,255,0.15),transparent_50%)]" />
+
+  {/* Snow Layer */}
+  <SnowBackground />
+
+  {children}
+</body>
     </html>
   );
 }

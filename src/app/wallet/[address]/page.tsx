@@ -1,56 +1,165 @@
+import { getOnChainScore } from "@/lib/avalancheWars";
+import { getTier } from "@/lib/tier";
+
 type AnalyzeResponse = {
   ok: boolean;
   address: string;
-  chain: string;
-  collection: string;
+  nftCount: number;
+  floorByCollection?: Record<string, number>;
   totalValueEstimate: number;
-  rarityIndex: number;
   powerScore: number;
-  error?: string;
+  sample: any[];
 };
 
 export default async function WalletPage({
   params,
 }: {
-  params: Promise<{ address: string }> | { address: string };
+  params: Promise<{ address: string }>;
 }) {
-  const { address } = await Promise.resolve(params);
+  const { address } = await params;
 
-  const res = await fetch(
-    `http://localhost:3000/api/analyze?address=${encodeURIComponent(address)}`,
-    { cache: "no-store" }
-  );
-  const data = (await res.json()) as AnalyzeResponse;
+  let data: AnalyzeResponse | null = null;
+  let onChainScore = 0;
+  let synced = false;
+  let tier = { name: "RECRUIT", color: "text-zinc-400" };
+
+  try {
+    // Fetch wallet analysis
+    const res = await fetch(
+      `http://localhost:3000/api/analyze?address=${encodeURIComponent(
+        address
+      )}`,
+      { cache: "no-store" }
+    );
+
+    data = await res.json();
+
+    if (data?.ok) {
+      // Get on-chain score
+      try {
+        onChainScore = await getOnChainScore(address);
+      } catch (err) {
+        console.error("On-chain read failed:", err);
+        onChainScore = 0;
+      }
+
+      // Auto sync if needed
+      if (data.powerScore > onChainScore) {
+        try {
+          console.log("AUTO SYNC TRIGGERED");
+
+          const syncRes = await fetch(
+            "http://localhost:3000/api/sync",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                address,
+                score: data.powerScore,
+              }),
+            }
+          );
+
+          const syncData = await syncRes.json();
+
+          if (syncData.ok) {
+            onChainScore = data.powerScore;
+            synced = true;
+          } else {
+            console.error("Sync failed:", syncData);
+          }
+        } catch (err) {
+          console.error("Auto sync error:", err);
+        }
+      }
+
+      tier = getTier(data.powerScore);
+    }
+  } catch (err) {
+    console.error("Wallet page error:", err);
+  }
 
   return (
     <main className="min-h-screen bg-black text-white p-8">
-      <h1 className="text-3xl font-bold text-red-500">Wallet Analysis</h1>
+      <h1 className="text-4xl font-bold text-cyan-400 mb-6">
+        Avalanche Wars — Wallet Ranking
+      </h1>
 
-      <p className="text-zinc-300 mt-2">
-        Address: <span className="text-white">{address}</span>
-      </p>
-
-      <div className="mt-8 grid gap-4 max-w-2xl">
-        <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
-          <div className="text-zinc-400 text-sm">Collection</div>
-          <div className="text-xl font-semibold">{data.collection}</div>
-        </div>
-
-        <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
-          <div className="text-zinc-400 text-sm">Power Score</div>
-          <div className="text-4xl font-bold">{data.powerScore}</div>
-        </div>
-
-        <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
-          <div className="text-zinc-400 text-sm">Total Value Estimate</div>
-          <div className="text-2xl font-semibold">{data.totalValueEstimate}</div>
-        </div>
-
-        <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
-          <div className="text-zinc-400 text-sm">Rarity Index</div>
-          <div className="text-2xl font-semibold">{data.rarityIndex}</div>
-        </div>
+      <div className="mb-6 text-sm text-zinc-400 break-all">
+        Address: {address}
       </div>
+
+      {!data?.ok && (
+        <div className="text-red-500">
+          Failed to load wallet data.
+        </div>
+      )}
+
+      {data?.ok && (
+        <div className="space-y-6 max-w-3xl">
+
+          {/* XP Card */}
+          <div className="p-8 rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-black via-zinc-950 to-black shadow-xl backdrop-blur-xl">
+
+            <div className="text-sm text-cyan-300 tracking-widest">
+              RANKED XP
+            </div>
+
+            <div className={`text-5xl font-extrabold mt-2 ${tier.color}`}>
+              {data.powerScore}
+            </div>
+
+            <div className="mt-2 text-xl font-semibold tracking-wide">
+              {tier.name}
+            </div>
+
+            {synced && (
+              <div className="mt-2 text-xs text-green-400">
+                ✓ Synced On-Chain
+              </div>
+            )}
+
+            <div className="mt-6 h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-700"
+                style={{
+                  width: `${Math.min(data.powerScore, 100)}%`,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* On-Chain Score */}
+          <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
+            <div className="text-sm text-zinc-400">
+              On-Chain Score
+            </div>
+            <div className="text-3xl font-bold">
+              {onChainScore}
+            </div>
+          </div>
+
+          {/* NFT Count */}
+          <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
+            <div className="text-sm text-zinc-400">
+              NFT Count
+            </div>
+            <div className="text-3xl font-bold">
+              {data.nftCount}
+            </div>
+          </div>
+
+          {/* Total Value */}
+          <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
+            <div className="text-sm text-zinc-400">
+              Total Floor Value
+            </div>
+            <div className="text-3xl font-bold">
+              {data.totalValueEstimate}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
