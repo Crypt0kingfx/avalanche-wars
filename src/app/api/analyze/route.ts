@@ -27,8 +27,12 @@ export async function GET(req: Request) {
 
     // --- floor-based portfolio value estimate ---
     const uniqueCollections = Array.from(
-      new Set(nfts.map((n: any) => n.collection).filter(Boolean))
-    );
+  new Set(
+    nfts
+      .map((nft: any) => nft.collection)
+      .filter((slug: any): slug is string => typeof slug === "string")
+  )
+);
 
     const floorByCollection: Record<string, number> = {};
     let totalValueEstimate = 0;
