@@ -19,9 +19,11 @@ export default function SnowBackground() {
   background: { color: "transparent" },
   particles: {
     number: {
-      value: 120,
-      density: { enable: true, area: 800 },
-    },
+  value: 120,
+  density: {
+    enable: true,
+  },
+},
     color: { value: ["#ffffff", "#00e5ff", "#93c5fd"] },
     shape: { type: "circle" },
     opacity: {
