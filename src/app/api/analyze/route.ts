@@ -26,11 +26,11 @@ export async function GET(req: Request) {
     const nfts = Array.isArray(data?.nfts) ? data.nfts : [];
 
     // --- floor-based portfolio value estimate ---
-    const uniqueCollections = Array.from(
+    const uniqueCollections: string[] = Array.from(
   new Set(
     nfts
       .map((nft: any) => nft.collection)
-      .filter((slug: any): slug is string => typeof slug === "string")
+      .filter((slug: any) => typeof slug === "string")
   )
 );
 
