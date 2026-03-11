@@ -1,6 +1,22 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function HomePage() {
+
+  const [address, setAddress] = useState("");
+  const router = useRouter();
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!address) return;
+
+    router.push(`/wallet/${address}`);
+  }
+
   return (
     <main className="relative min-h-screen flex items-center justify-center text-white overflow-hidden">
 
@@ -36,13 +52,13 @@ export default function HomePage() {
         <div className="bg-white/5 border border-cyan-500/30 backdrop-blur-xl rounded-2xl p-8 shadow-[0_0_40px_rgba(34,211,238,0.25)]">
 
           <form
-            action="/wallet"
-            method="get"
+            onSubmit={handleSubmit}
             className="flex flex-col md:flex-row gap-4"
           >
 
             <input
-              name="address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
               placeholder="Enter Avalanche wallet address..."
               className="flex-1 px-4 py-3 rounded-lg bg-black/60 border border-zinc-700 outline-none focus:border-cyan-400"
             />
@@ -66,8 +82,8 @@ export default function HomePage() {
             Global Leaderboard
           </Link>
 
-          <Link href="https://avax.network" className="hover:underline">
-            Avalanche Network
+          <Link href="/" className="hover:underline">
+            Wallet Analyzer
           </Link>
 
         </div>
