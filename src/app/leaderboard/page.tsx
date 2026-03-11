@@ -1,169 +1,135 @@
-"use client";
+import Link from "next/link";
 
-import { useEffect, useState } from "react";
-import SnowBackground from "@/components/SnowBackground";
+export default async function LeaderboardPage() {
 
-type LeaderboardEntry = {
-  address: string;
-  powerScore: number;
-  totalValueEstimate: number;
-  nftCount: number;
-};
+  const players = [
+    { rank: 1, wallet: "0xA357...21cC", score: 87 },
+    { rank: 2, wallet: "0x8F12...98ab", score: 76 },
+    { rank: 3, wallet: "0x7Dd3...5fa1", score: 65 },
+    { rank: 4, wallet: "0x9123...ab21", score: 54 },
+    { rank: 5, wallet: "0x7f81...88de", score: 43 },
+  ];
 
-function getTier(score: number) {
-  if (score >= 1000) return "APEX";
-  if (score >= 500) return "COMMANDER";
-  if (score >= 200) return "ELITE";
-  if (score >= 50) return "SOLDIER";
-  return "RECRUIT";
-}
-
-function getMedal(index: number) {
-  if (index === 0) return "🥇";
-  if (index === 1) return "🥈";
-  if (index === 2) return "🥉";
-  return `#${index + 1}`;
-}
-
-function AnimatedScore({ value }: { value: number }) {
-  const [display, setDisplay] = useState(0);
-
-  useEffect(() => {
-    let start = 0;
-    const duration = 800;
-    const increment = value / (duration / 16);
-
-    const counter = setInterval(() => {
-      start += increment;
-      if (start >= value) {
-        start = value;
-        clearInterval(counter);
-      }
-      setDisplay(Math.floor(start));
-    }, 16);
-
-    return () => clearInterval(counter);
-  }, [value]);
+  const topThree = players.slice(0, 3);
+  const rest = players.slice(3);
 
   return (
-    <div className="text-2xl font-bold text-white">
-      {display}
-    </div>
-  );
-}
+    <main className="relative min-h-screen text-white overflow-hidden">
 
-export default function LeaderboardPage() {
-  const [ranked, setRanked] = useState<LeaderboardEntry[]>([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+      {/* BACKGROUND */}
 
-  async function analyzeWallet(address: string) {
-    const res = await fetch(`/api/analyze?address=${address}`);
-    return res.json();
-  }
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1519681393784-d120267933ba')",
+        }}
+      />
 
-  async function addWallet() {
-    if (!input) return;
-    setLoading(true);
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
 
-    const data = await analyzeWallet(input);
+      {/* CONTENT */}
 
-    if (data.ok) {
-      const newEntry: LeaderboardEntry = {
-        address: data.address,
-        powerScore: data.powerScore,
-        totalValueEstimate: data.totalValueEstimate,
-        nftCount: data.nftCount,
-      };
+      <div className="relative z-10 p-8 max-w-6xl mx-auto">
 
-      const updated = [...ranked, newEntry].sort(
-        (a, b) => b.powerScore - a.powerScore
-      );
+        {/* HEADER */}
 
-      setRanked(updated);
-      setInput("");
-    }
+        <div className="flex justify-between items-center mb-12">
 
-    setLoading(false);
-  }
+          <h1 className="text-5xl font-bold text-cyan-400 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]">
+            Avalanche Leaderboard
+          </h1>
 
-  return (
-    <main className="min-h-screen bg-black text-white p-8 relative z-10">
-      <SnowBackground />
-
-      <h1 className="text-4xl font-bold text-red-500 mb-6 text-center">
-        Avalanche Wars Leaderboard
-      </h1>
-
-      {/* Wallet Input */}
-      <div className="max-w-3xl mx-auto mb-8 flex gap-4">
-        <input
-          type="text"
-          placeholder="Enter wallet address..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 outline-none"
-        />
-        <button
-          onClick={addWallet}
-          className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-xl font-semibold transition"
-        >
-          {loading ? "Analyzing..." : "Analyze"}
-        </button>
-      </div>
-
-      {/* Leaderboard */}
-      <div className="max-w-4xl mx-auto space-y-4">
-        {ranked.map((entry, index) => (
-          <div
-            key={entry.address}
-            className={`flex items-center justify-between p-6 rounded-2xl border transition
-              ${
-                index === 0
-                  ? "border-yellow-500 bg-yellow-500/10"
-                  : index === 1
-                  ? "border-gray-400 bg-gray-400/10"
-                  : index === 2
-                  ? "border-amber-700 bg-amber-700/10"
-                  : "border-zinc-800 bg-zinc-950"
-              }`}
+          <Link
+            href="/"
+            className="px-4 py-2 rounded-lg bg-cyan-500 text-black font-semibold hover:bg-cyan-400 transition"
           >
-            <div className="flex items-center gap-6">
-              <div className="text-2xl font-bold">
-                {getMedal(index)}
-              </div>
+            Wallet Analyzer
+          </Link>
 
-              <div>
-                <div className="font-semibold">
-                  {entry.address.slice(0, 6)}...
-                  {entry.address.slice(-4)}
-                </div>
+        </div>
+
+        {/* TOP 3 PODIUM */}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+
+          {topThree.map((player) => {
+
+            const medal =
+              player.rank === 1
+                ? "🥇"
+                : player.rank === 2
+                ? "🥈"
+                : "🥉";
+
+            const glow =
+              player.rank === 1
+                ? "shadow-[0_0_50px_rgba(255,215,0,0.5)] border-yellow-400"
+                : player.rank === 2
+                ? "shadow-[0_0_40px_rgba(192,192,192,0.4)] border-gray-300"
+                : "shadow-[0_0_40px_rgba(205,127,50,0.4)] border-orange-400";
+
+            return (
+              <div
+                key={player.rank}
+                className={`p-8 rounded-2xl bg-white/5 backdrop-blur-xl border ${glow} text-center`}
+              >
+
+                <div className="text-4xl mb-2">{medal}</div>
 
                 <div className="text-sm text-zinc-400">
-                  NFTs: {entry.nftCount}
+                  Rank #{player.rank}
                 </div>
 
-                <div className="text-xs mt-1 text-red-400 font-bold">
-                  {getTier(entry.powerScore)}
+                <div className="mt-2 font-semibold text-lg">
+                  {player.wallet}
                 </div>
+
+                <div className="mt-4 text-3xl font-bold text-cyan-400">
+                  {player.score}
+                </div>
+
+                <div className="text-zinc-400 text-sm">
+                  XP
+                </div>
+
               </div>
+            );
+          })}
+
+        </div>
+
+        {/* REST OF LEADERBOARD */}
+
+        <div className="space-y-4 max-w-4xl mx-auto">
+
+          {rest.map((player) => (
+
+            <div
+              key={player.rank}
+              className="flex justify-between items-center p-4 rounded-xl border border-zinc-800 bg-zinc-950 backdrop-blur-xl hover:border-cyan-400 transition"
+            >
+
+              <div className="text-lg font-bold">
+                #{player.rank}
+              </div>
+
+              <div className="text-zinc-400">
+                {player.wallet}
+              </div>
+
+              <div className="text-cyan-400 font-bold">
+                {player.score} XP
+              </div>
+
             </div>
 
-            <div className="text-right">
-              <AnimatedScore value={entry.powerScore} />
-              <div className="text-sm text-zinc-500">
-                Value: {entry.totalValueEstimate}
-              </div>
-            </div>
-          </div>
-        ))}
+          ))}
 
-        {ranked.length === 0 && (
-          <div className="text-center text-zinc-500 mt-10">
-            No wallets analyzed yet.
-          </div>
-        )}
+        </div>
+
       </div>
+
     </main>
   );
 }
