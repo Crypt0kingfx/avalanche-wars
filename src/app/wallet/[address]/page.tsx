@@ -26,14 +26,16 @@ export default async function WalletPage({
   try {
     // Fetch wallet analysis
     const res = await fetch(
-  `https://avalanche-wars.vercel.app/api/analyze?address=${encodeURIComponent(address)}`,
-  { cache: "no-store" }
-);
+      `https://avalanche-wars.vercel.app/api/analyze?address=${encodeURIComponent(
+        address
+      )}`,
+      { cache: "no-store" }
+    );
 
     data = await res.json();
 
     if (data?.ok) {
-      // Get on-chain score
+      // Read on-chain score
       try {
         onChainScore = await getOnChainScore(address);
       } catch (err) {
@@ -41,13 +43,14 @@ export default async function WalletPage({
         onChainScore = 0;
       }
 
-      // Auto sync if needed
+      // Auto-sync score if needed
       if (data.powerScore > onChainScore) {
         try {
           console.log("AUTO SYNC TRIGGERED");
 
-         const syncRes = await fetch(
-  "https://avalanche-wars.vercel.app/api/sync",
+          const syncRes = await fetch(
+            "https://avalanche-wars.vercel.app/api/sync",
+            {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -126,7 +129,7 @@ export default async function WalletPage({
             </div>
           </div>
 
-          {/* On-Chain Score */}
+          {/* On-chain score */}
           <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
             <div className="text-sm text-zinc-400">
               On-Chain Score
@@ -136,7 +139,7 @@ export default async function WalletPage({
             </div>
           </div>
 
-          {/* NFT Count */}
+          {/* NFT count */}
           <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
             <div className="text-sm text-zinc-400">
               NFT Count
@@ -146,7 +149,7 @@ export default async function WalletPage({
             </div>
           </div>
 
-          {/* Total Value */}
+          {/* Total value */}
           <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
             <div className="text-sm text-zinc-400">
               Total Floor Value
