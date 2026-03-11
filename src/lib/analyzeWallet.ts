@@ -4,8 +4,16 @@ export async function analyzeWallet(address: string) {
   const nfts = await getWalletNfts(address);
 
   if (!nfts) {
-    return { ok: false };
-  }
+  return {
+    ok: false,
+    address,
+    nftCount: 0,
+    floorByCollection: {},
+    totalValueEstimate: 0,
+    powerScore: 0,
+    sample: [],
+  };
+}
 
   const collections: Record<string, number> = {};
 
