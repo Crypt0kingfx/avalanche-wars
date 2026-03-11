@@ -25,11 +25,9 @@ export default async function WalletPage({
   let tier = { name: "RECRUIT", color: "text-zinc-400" };
 
   try {
-    // Fetch wallet analysis
-    data = await analyzeWallet(address);
+    data = (await analyzeWallet(address)) as AnalyzeResponse;
 
     if (data?.ok) {
-      // Read on-chain score
       try {
         onChainScore = await getOnChainScore(address);
       } catch (err) {
@@ -37,30 +35,24 @@ export default async function WalletPage({
         onChainScore = 0;
       }
 
-      // Auto-sync score if needed
       if (data.powerScore > onChainScore) {
         try {
-          console.log("AUTO SYNC TRIGGERED");
-
-          const syncRes = await fetch(
-            "https://avalanche-wars.vercel.app/api/sync",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                address,
-                score: data.powerScore,
-              }),
-            }
-          );
+          const syncRes = await fetch("/api/sync", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              address,
+              score: data.powerScore,
+            }),
+          });
 
           const syncData = await syncRes.json();
 
           if (syncData.ok) {
             onChainScore = data.powerScore;
             synced = true;
-          } else {
-            console.error("Sync failed:", syncData);
           }
         } catch (err) {
           console.error("Auto sync error:", err);
@@ -83,13 +75,17 @@ export default async function WalletPage({
         Address: {address}
       </div>
 
-      {!data?.ok && (
+      {!data && (
+        <div className="text-zinc-400">Loading wallet data...</div>
+      )}
+
+      {data && !data.ok && (
         <div className="text-red-500">
           Failed to load wallet data.
         </div>
       )}
 
-      {data?.ok && (
+      {data && data.ok && (
         <div className="space-y-6 max-w-3xl">
 
           {/* XP Card */}
@@ -152,6 +148,7 @@ export default async function WalletPage({
               {data.totalValueEstimate}
             </div>
           </div>
+
         </div>
       )}
     </main>
