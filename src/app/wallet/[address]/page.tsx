@@ -47,7 +47,6 @@ export default async function WalletPage({
 
   try {
     const result = await analyzeWallet(address);
-
     if (result) {
       data = result;
     }
@@ -71,11 +70,11 @@ export default async function WalletPage({
   }
 
   return (
-    <main className="min-h-screen bg-black text-white p-8">
+    <main className="min-h-screen bg-gradient-to-br from-black via-zinc-950 to-blue-950 text-white p-8">
 
       {/* HEADER */}
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-10">
 
         <h1 className="text-4xl font-bold text-cyan-400">
           Avalanche Wars — Wallet Ranking
@@ -90,17 +89,17 @@ export default async function WalletPage({
 
       </div>
 
-      <div className="mb-6 text-sm text-zinc-400 break-all">
+      <div className="mb-10 text-sm text-zinc-400 break-all">
         Address: {address}
       </div>
 
-      {/* STATS */}
+      {/* DASHBOARD */}
 
-      <div className="space-y-6 max-w-3xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl">
 
         {/* XP CARD */}
 
-        <div className="p-8 rounded-3xl border border-cyan-500/30 bg-zinc-950">
+        <div className="p-8 rounded-3xl border border-cyan-500/40 bg-zinc-950 shadow-[0_0_40px_rgba(34,211,238,0.25)]">
 
           <div className="text-sm text-cyan-300 tracking-widest">
             RANKED XP
@@ -112,6 +111,13 @@ export default async function WalletPage({
 
           <div className="mt-2 text-xl font-semibold">
             {tier.name}
+          </div>
+
+          <div className="mt-6 h-2 bg-zinc-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-cyan-400 to-blue-500"
+              style={{ width: `${data.powerScore}%` }}
+            />
           </div>
 
         </div>
@@ -164,7 +170,7 @@ export default async function WalletPage({
 
       {data.sample?.length > 0 && (
 
-        <div className="mt-12">
+        <div className="mt-14">
 
           <h2 className="text-2xl font-bold mb-6 text-cyan-400">
             NFT Loadout
@@ -176,7 +182,7 @@ export default async function WalletPage({
 
               <div
                 key={i}
-                className="rounded-xl border border-zinc-800 bg-zinc-950 p-3"
+                className="rounded-xl border border-cyan-500/20 bg-zinc-950 p-3 hover:scale-105 hover:border-cyan-400 transition"
               >
 
                 <img
