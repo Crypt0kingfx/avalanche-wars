@@ -1,44 +1,78 @@
-"use client";
+import Link from "next/link";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-export default function Home() {
-  const router = useRouter();
-  const [address, setAddress] = useState("");
-
-  function go() {
-    const a = address.trim();
-    if (!a) return;
-    router.push(`/wallet/${a}`);
-  }
-
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6">
-      <h1 className="text-5xl font-bold mb-6 text-red-500">Avalanche Wars</h1>
+    <main className="relative min-h-screen flex items-center justify-center text-white overflow-hidden">
 
-      <p className="text-lg text-gray-300 mb-8 text-center max-w-xl">
-        Wallet Intelligence & NFT Power Rankings
-      </p>
+      {/* BACKGROUND IMAGE */}
 
-      <div className="w-full max-w-xl flex gap-3">
-        <input
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          placeholder="Paste wallet address (0x...)"
-          className="flex-1 px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white outline-none"
-        />
-        <button
-          onClick={go}
-          className="px-6 py-3 bg-red-600 hover:bg-red-700 rounded-xl text-lg font-semibold transition"
-        >
-          Analyze
-        </button>
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1519681393784-d120267933ba')",
+        }}
+      />
+
+      {/* DARK OVERLAY */}
+
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+
+      {/* CONTENT */}
+
+      <div className="relative z-10 w-full max-w-3xl text-center">
+
+        <h1 className="text-6xl font-bold text-cyan-400 mb-4 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]">
+          Avalanche Wars
+        </h1>
+
+        <p className="text-zinc-300 mb-10 text-lg">
+          Discover the power of Avalanche wallets. Rank players by NFT strength,
+          explore their assets, and compete on the global leaderboard.
+        </p>
+
+        {/* GLASS PANEL */}
+
+        <div className="bg-white/5 border border-cyan-500/30 backdrop-blur-xl rounded-2xl p-8 shadow-[0_0_40px_rgba(34,211,238,0.25)]">
+
+          <form
+            action="/wallet"
+            method="get"
+            className="flex flex-col md:flex-row gap-4"
+          >
+
+            <input
+              name="address"
+              placeholder="Enter Avalanche wallet address..."
+              className="flex-1 px-4 py-3 rounded-lg bg-black/60 border border-zinc-700 outline-none focus:border-cyan-400"
+            />
+
+            <button
+              type="submit"
+              className="px-6 py-3 bg-cyan-500 text-black rounded-lg font-semibold hover:bg-cyan-400 transition shadow-lg"
+            >
+              Analyze Wallet
+            </button>
+
+          </form>
+
+        </div>
+
+        {/* NAV LINKS */}
+
+        <div className="mt-10 flex justify-center gap-8 text-cyan-400">
+
+          <Link href="/leaderboard" className="hover:underline">
+            Global Leaderboard
+          </Link>
+
+          <Link href="https://avax.network" className="hover:underline">
+            Avalanche Network
+          </Link>
+
+        </div>
+
       </div>
-
-      <p className="text-sm text-zinc-500 mt-4">
-        Tip: paste any wallet you want to demo.
-      </p>
     </main>
   );
 }
