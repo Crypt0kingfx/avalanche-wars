@@ -26,11 +26,9 @@ export default async function WalletPage({
   try {
     // Fetch wallet analysis
     const res = await fetch(
-      `http://localhost:3000/api/analyze?address=${encodeURIComponent(
-        address
-      )}`,
-      { cache: "no-store" }
-    );
+  `/api/analyze?address=${encodeURIComponent(address)}`,
+  { cache: "no-store" }
+);
 
     data = await res.json();
 
@@ -48,8 +46,8 @@ export default async function WalletPage({
         try {
           console.log("AUTO SYNC TRIGGERED");
 
-          const syncRes = await fetch(
-            "http://localhost:3000/api/sync",
+         const syncRes = await fetch(
+            "/api/sync",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
