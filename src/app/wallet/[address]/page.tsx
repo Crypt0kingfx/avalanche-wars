@@ -26,7 +26,7 @@ export default async function WalletPage({
   try {
     // Fetch wallet analysis
     const res = await fetch(
-  `/api/analyze?address=${encodeURIComponent(address)}`,
+  `https://avalanche-wars.vercel.app/api/analyze?address=${encodeURIComponent(address)}`,
   { cache: "no-store" }
 );
 
@@ -47,8 +47,7 @@ export default async function WalletPage({
           console.log("AUTO SYNC TRIGGERED");
 
          const syncRes = await fetch(
-            "/api/sync",
-            {
+  "https://avalanche-wars.vercel.app/api/sync",
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
