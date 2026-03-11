@@ -83,6 +83,7 @@ export default async function WalletPage({
       <div className="space-y-6 max-w-3xl">
 
         {/* XP CARD */}
+
         <div className="p-8 rounded-3xl border border-cyan-500/30 bg-zinc-950">
 
           <div className="text-sm text-cyan-300 tracking-widest">
@@ -100,6 +101,7 @@ export default async function WalletPage({
         </div>
 
         {/* ON CHAIN SCORE */}
+
         <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
 
           <div className="text-sm text-zinc-400">
@@ -113,6 +115,7 @@ export default async function WalletPage({
         </div>
 
         {/* NFT COUNT */}
+
         <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
 
           <div className="text-sm text-zinc-400">
@@ -126,6 +129,7 @@ export default async function WalletPage({
         </div>
 
         {/* TOTAL VALUE */}
+
         <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
 
           <div className="text-sm text-zinc-400">
@@ -139,6 +143,49 @@ export default async function WalletPage({
         </div>
 
       </div>
+
+      {/* NFT GALLERY */}
+
+      {data.sample?.length > 0 && (
+
+        <div className="mt-12">
+
+          <h2 className="text-2xl font-bold mb-6 text-cyan-400">
+            NFT Loadout
+          </h2>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+
+            {data.sample.map((nft: any, i: number) => (
+
+              <div
+                key={i}
+                className="rounded-xl border border-zinc-800 bg-zinc-950 p-3"
+              >
+
+                <img
+                  src={nft.display_image_url || nft.image_url}
+                  alt={nft.name}
+                  className="rounded-lg mb-2"
+                />
+
+                <div className="text-sm font-semibold">
+                  {nft.name || "NFT"}
+                </div>
+
+                <div className="text-xs text-zinc-400">
+                  {nft.collection}
+                </div>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        </div>
+
+      )}
 
     </main>
   );
