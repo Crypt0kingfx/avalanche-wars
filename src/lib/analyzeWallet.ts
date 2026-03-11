@@ -1,24 +1,32 @@
 import { getWalletNfts, getCollectionStats } from "@/lib/opensea";
 
 export async function analyzeWallet(address: string) {
-  const nfts = await getWalletNfts(address);
+  const nfts = await getWalletNfts({
+    chain: "avalanche",
+    address,
+  });
 
   if (!nfts) {
-  return {
-    ok: false,
-    address,
-    nftCount: 0,
-    floorByCollection: {},
-    totalValueEstimate: 0,
-    powerScore: 0,
-    sample: [],
-  };
-}
+    return {
+      ok: false,
+      address,
+      nftCount: 0,
+      floorByCollection: {},
+      totalValueEstimate: 0,
+      powerScore: 0,
+      sample: [],
+    };
+  }
 
   const collections: Record<string, number> = {};
 
   for (const nft of nfts) {
-    const slug = nft.collection;
+    const slug =
+      typeof nft.collection === "string"
+        ? nft.collection
+        : nft.collection?.slug;
+
+    if (!slug) continue;
 
     if (!collections[slug]) {
       try {
