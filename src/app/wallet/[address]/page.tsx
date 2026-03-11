@@ -7,12 +7,34 @@ export default async function WalletPage({
 }: {
   params: { address: string };
 }) {
-  const address = params.address;
+  const address = params?.address || "";
 
-  const data = await analyzeWallet(address);
+  if (!address) {
+    return (
+      <main className="p-8 text-white bg-black min-h-screen">
+        Wallet address missing
+      </main>
+    );
+  }
+
+  let data = {
+    powerScore: 0,
+    nftCount: 0,
+    totalValueEstimate: 0,
+  };
 
   let onChainScore = 0;
   let tier = { name: "RECRUIT", color: "text-zinc-400" };
+
+  try {
+    const result = await analyzeWallet(address);
+
+    if (result) {
+      data = result;
+    }
+  } catch (err) {
+    console.error("Analyzer failed:", err);
+  }
 
   try {
     onChainScore = await getOnChainScore(address);
@@ -20,7 +42,11 @@ export default async function WalletPage({
     onChainScore = 0;
   }
 
-  tier = getTier(data.powerScore);
+  try {
+    tier = getTier(data.powerScore);
+  } catch {
+    tier = { name: "RECRUIT", color: "text-zinc-400" };
+  }
 
   return (
     <main className="min-h-screen bg-black text-white p-8">
@@ -34,7 +60,6 @@ export default async function WalletPage({
 
       <div className="space-y-6 max-w-3xl">
 
-        {/* XP */}
         <div className="p-8 rounded-3xl border border-cyan-500/30 bg-zinc-950">
           <div className="text-sm text-cyan-300 tracking-widest">
             RANKED XP
@@ -49,7 +74,6 @@ export default async function WalletPage({
           </div>
         </div>
 
-        {/* On-chain score */}
         <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
           <div className="text-sm text-zinc-400">
             On-Chain Score
@@ -60,7 +84,6 @@ export default async function WalletPage({
           </div>
         </div>
 
-        {/* NFT count */}
         <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
           <div className="text-sm text-zinc-400">
             NFT Count
@@ -71,7 +94,6 @@ export default async function WalletPage({
           </div>
         </div>
 
-        {/* Total value */}
         <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950">
           <div className="text-sm text-zinc-400">
             Total Floor Value
