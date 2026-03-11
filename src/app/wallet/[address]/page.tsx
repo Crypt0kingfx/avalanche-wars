@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { analyzeWallet } from "@/lib/analyzeWallet";
 import { getOnChainScore } from "@/lib/avalancheWars";
 import { getTier } from "@/lib/tier";
@@ -72,13 +73,28 @@ export default async function WalletPage({
   return (
     <main className="min-h-screen bg-black text-white p-8">
 
-      <h1 className="text-4xl font-bold text-cyan-400 mb-6">
-        Avalanche Wars — Wallet Ranking
-      </h1>
+      {/* HEADER */}
+
+      <div className="flex items-center justify-between mb-6">
+
+        <h1 className="text-4xl font-bold text-cyan-400">
+          Avalanche Wars — Wallet Ranking
+        </h1>
+
+        <Link
+          href="/leaderboard"
+          className="px-4 py-2 rounded-lg bg-cyan-500 text-black font-semibold hover:bg-cyan-400 transition"
+        >
+          View Leaderboard
+        </Link>
+
+      </div>
 
       <div className="mb-6 text-sm text-zinc-400 break-all">
         Address: {address}
       </div>
+
+      {/* STATS */}
 
       <div className="space-y-6 max-w-3xl">
 
