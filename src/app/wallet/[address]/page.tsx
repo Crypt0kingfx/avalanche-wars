@@ -1,3 +1,4 @@
+import { analyzeWallet } from "@/lib/analyzeWallet";
 import { getOnChainScore } from "@/lib/avalancheWars";
 import { getTier } from "@/lib/tier";
 
@@ -25,12 +26,7 @@ export default async function WalletPage({
 
   try {
     // Fetch wallet analysis
-    const res = await fetch(
-  `${process.env.NEXT_PUBLIC_SITE_URL}/api/analyze?address=${encodeURIComponent(address)}`,
-  { cache: "no-store" }
-);
-
-data = await res.json();
+    data = await analyzeWallet(address);
 
     if (data?.ok) {
       // Read on-chain score
