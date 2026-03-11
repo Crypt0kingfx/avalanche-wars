@@ -26,13 +26,11 @@ export default async function WalletPage({
   try {
     // Fetch wallet analysis
     const res = await fetch(
-      `https://avalanche-wars.vercel.app/api/analyze?address=${encodeURIComponent(
-        address
-      )}`,
-      { cache: "no-store" }
-    );
+  `${process.env.NEXT_PUBLIC_SITE_URL}/api/analyze?address=${encodeURIComponent(address)}`,
+  { cache: "no-store" }
+);
 
-    data = await res.json();
+data = await res.json();
 
     if (data?.ok) {
       // Read on-chain score
