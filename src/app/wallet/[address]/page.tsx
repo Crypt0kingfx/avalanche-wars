@@ -14,9 +14,9 @@ type AnalyzeResponse = {
 export default async function WalletPage({
   params,
 }: {
-  params: Promise<{ address: string }>;
+  params: { address: string };
 }) {
-  const { address } = await params;
+  const { address } = params;
 
   let data: AnalyzeResponse | null = null;
   let onChainScore = 0;
