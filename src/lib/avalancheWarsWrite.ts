@@ -7,12 +7,17 @@ const ABI = [
 ];
 
 export async function updateOnChainScore(address: string, score: number) {
+
   if (!process.env.PRIVATE_KEY) {
     throw new Error("Missing PRIVATE_KEY");
   }
 
+  if (!process.env.FUJI_RPC) {
+    throw new Error("Missing FUJI_RPC");
+  }
+
   const provider = new ethers.JsonRpcProvider(
-    process.env.NEXT_PUBLIC_FUJI_RPC
+    process.env.FUJI_RPC
   );
 
   const wallet = new ethers.Wallet(
@@ -20,9 +25,14 @@ export async function updateOnChainScore(address: string, score: number) {
     provider
   );
 
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, wallet);
+  const contract = new ethers.Contract(
+    CONTRACT_ADDRESS,
+    ABI,
+    wallet
+  );
 
   const tx = await contract.updateScore(address, score);
+
   await tx.wait();
 
   return tx.hash;
